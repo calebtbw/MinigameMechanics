@@ -1,0 +1,7 @@
+name: MinigameMechanics
+version: ${project.version}
+main: me.calebtbw.minigamemechanics.MinigameMechanics
+api-version: 1.16
+authors: [ CalebT ]
+description: Mechanics for Spigot Minigames
+website: http://calebtbw.me
