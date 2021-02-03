@@ -1,10 +1,12 @@
 package me.calebtbw.minigamemechanics;
 
+import com.google.common.collect.TreeMultimap;
 import me.calebtbw.minigamemechanics.kits.Kit;
 import me.calebtbw.minigamemechanics.kits.KitType;
 import me.calebtbw.minigamemechanics.kits.types.Fighter;
 import me.calebtbw.minigamemechanics.kits.types.Miner;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -17,6 +19,7 @@ public class Arena {
 
     private int id;
     private ArrayList<UUID> players;
+    private HashMap<UUID, Team> teams;
     private HashMap<UUID, Kit> kits;
     private Location spawn;
     private GameState state;
@@ -26,6 +29,7 @@ public class Arena {
     public Arena(int id) {
         this.id = id;
         players = new ArrayList<>();
+        teams = new HashMap<>();
         kits = new HashMap<>();
         spawn = Config.getArenaSpawn(id);
         state = GameState.RECRUITING;
@@ -46,6 +50,7 @@ public class Arena {
 
         state = GameState.RECRUITING;
         players.clear();
+        teams.clear();
         countdown = new Countdown(this);
         game = new Game(this);
     }
@@ -60,6 +65,17 @@ public class Arena {
         players.add(player.getUniqueId());
         player.teleport(spawn);
 
+        TreeMultimap<Integer, Team> count = TreeMultimap.create();
+        for (Team team : Team.values()) {
+            count.put(getTeamCount(team), team);
+        }
+
+        Team selected = (Team) count.values().toArray()[0];
+        setTeam(player, selected);
+
+        player.sendMessage(ChatColor.GRAY + "You were placed on " + selected.getDisplay() + ChatColor.GRAY + " team!");
+
+
         if (players.size() >= Config.getRequiredPlayers()) {
             countdown.begin();
         }
@@ -68,6 +84,8 @@ public class Arena {
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
         player.teleport(Config.getLobbySpawn());
+
+        removeTeam(player);
 
         removeKit(player.getUniqueId());
 
@@ -89,6 +107,26 @@ public class Arena {
     public Game getGame() { return game; }
 
     public void setState(GameState state) { this.state = state; }
+    public Team getTeam(Player player) { return teams.get(player.getUniqueId()); }
+    public void setTeam(Player player, Team team) {
+        removeTeam(player);
+        teams.put(player.getUniqueId(), team);
+    }
+    public void removeTeam(Player player) {
+        if (teams.containsKey(player.getUniqueId())) {
+            teams.remove(player.getUniqueId());
+        }
+    }
+
+    public int getTeamCount(Team team) {
+        int amount = 0;
+        for (Team t : teams.values()) {
+            if (t.equals(team)) {
+                amount++;
+            }
+        }
+        return amount;
+    }
 
 
     public void removeKit(UUID uuid) {

@@ -21,7 +21,7 @@ public class Game {
     public void start() {
         arena.setState(GameState.LIVE);
 
-        arena.sendMessage(ChatColor.GREEN + "Game has started! Be the first player to break 20 blocks!");
+        arena.sendMessage(ChatColor.GREEN + "Game has started!");
 
         for (UUID uuid : arena.getKits().keySet()) {
             arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
@@ -29,6 +29,7 @@ public class Game {
 
         for (UUID uuid : arena.getPlayers()) {
             points.put(uuid, 0);
+            Bukkit.getPlayer(uuid).closeInventory();
         }
 
     }

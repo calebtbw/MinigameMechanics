@@ -16,7 +16,18 @@ public class ArenaCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (args.length == 1 && args[0].equalsIgnoreCase("kit")) {
+            if (args.length == 1 && args[0].equalsIgnoreCase("team")) {
+                if (Manager.isPlaying(player)) {
+                    if (Manager.getArena(player).getState().equals(GameState.COUNTDOWN) ||
+                          Manager.getArena(player).getState().equals(GameState.RECRUITING)) {
+                        new TeamsGUI(player);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You can't use this right now!");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are not in an arena!");
+                }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("kit")) {
                 if (Manager.isPlaying(player)) {
                     if (Manager.getArena(player).getState().equals(GameState.RECRUITING) ||
                             Manager.getArena(player).getState().equals(GameState.COUNTDOWN)) {

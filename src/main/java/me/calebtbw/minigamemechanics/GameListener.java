@@ -30,6 +30,19 @@ public class GameListener implements Listener {
             player.closeInventory();
         }
 
+        if (e.getCurrentItem() !=null && e.getView().getTitle().contains("Team Selection") && e.getRawSlot() < 54) {
+            Team team = Team.valueOf(e.getCurrentItem().getItemMeta().getLocalizedName());
+
+            if (!Manager.getArena(player).getTeam(player).equals(team)) {
+                player.sendMessage(ChatColor.GRAY + "You are now on " + team.getDisplay() + ChatColor.GRAY + " team!");
+                Manager.getArena(player).setTeam(player, team);
+            } else {
+                player.sendMessage(ChatColor.GRAY + "You're already on " + team.getDisplay() + ChatColor.GRAY + " team!");
+            }
+
+            e.setCancelled(true);
+            player.closeInventory();
+        }
     }
 
     @EventHandler
