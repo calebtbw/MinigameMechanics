@@ -1,5 +1,6 @@
 package me.calebtbw.minigamemechanics;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,10 @@ public class Game {
         arena.setState(GameState.LIVE);
 
         arena.sendMessage(ChatColor.GREEN + "Game has started! Be the first player to break 20 blocks!");
+
+        for (UUID uuid : arena.getKits().keySet()) {
+            arena.getKits().get(uuid).onStart(Bukkit.getPlayer(uuid));
+        }
 
         for (UUID uuid : arena.getPlayers()) {
             points.put(uuid, 0);

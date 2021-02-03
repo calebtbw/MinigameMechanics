@@ -1,13 +1,36 @@
 package me.calebtbw.minigamemechanics;
 
+import me.calebtbw.minigamemechanics.kits.KitType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class GameListener implements Listener {
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+
+        Player player = (Player) e.getWhoClicked();
+
+        if (e.getView().getTitle().contains("Kit Selection") && e.getRawSlot() <= 54 && e.getCurrentItem() !=null) {
+            KitType type = KitType.valueOf(e.getCurrentItem().getItemMeta().getLocalizedName());
+
+            if (Manager.hasKit(player) && Manager.getKit(player).equals(type)) {
+                player.sendMessage(ChatColor.RED + "You have already equipped this kit!");
+            } else {
+                player.sendMessage(ChatColor.GREEN + " You have equipped the" + type.getDisplay() + ChatColor.GREEN + " kit!");
+                Manager.getArena(player).setKit(player.getUniqueId(), type);
+            }
+
+            e.setCancelled(true);
+            player.closeInventory();
+        }
+
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {

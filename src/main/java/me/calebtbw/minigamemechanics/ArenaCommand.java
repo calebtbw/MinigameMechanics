@@ -1,10 +1,13 @@
 package me.calebtbw.minigamemechanics;
 
+import me.calebtbw.minigamemechanics.kits.KitsGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.logging.Logger;
 
 public class ArenaCommand implements CommandExecutor {
 
@@ -14,7 +17,18 @@ public class ArenaCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
+            if (args.length == 1 && args[0].equalsIgnoreCase("kit")) {
+                if (Manager.isPlaying(player)) {
+                    if (Manager.getArena(player).getState().equals(GameState.RECRUITING) ||
+                            Manager.getArena(player).getState().equals(GameState.COUNTDOWN)) {
+                        new KitsGUI(player);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You can't use this right now!");
+                    }
+                } else {
+                    player.sendMessage(ChatColor.RED + "You're not in an arena!");
+                }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
                 player.sendMessage(ChatColor.GREEN + "These are the available arenas:");
                 for (Arena arena : Manager.getArenas()) {
                     player.sendMessage(ChatColor.GREEN + "- " + arena.getId());
@@ -35,15 +49,15 @@ public class ArenaCommand implements CommandExecutor {
                         if (Manager.isRecruiting(id)) {
                             Manager.getArena(id).addPlayer(player);
 
-                            player.sendMessage(ChatColor.GREEN +"You are now playing in Arena" + id +"!");
+                            player.sendMessage(ChatColor.GREEN + "You are now playing in Arena" + id + "!");
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot join this game right now!");
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "Invalid arena! See /arena list for available areans.");
+                        player.sendMessage(ChatColor.RED + "Invalid arena! See /arena list for available arenas.");
                     }
                 } catch (NumberFormatException x) {
-                    player.sendMessage(ChatColor.RED + "Invalid arena! See /arena list for available areans.");
+                    player.sendMessage(ChatColor.RED + "Invalid arena! See /arena list for available arenas.");
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "Invalid usage! - These are the options: ");
@@ -51,11 +65,7 @@ public class ArenaCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "/arena join [id]");
                 player.sendMessage(ChatColor.RED + "/arena leave");
             }
-        } else {
-            System.out.println("You cannot use this command from the console!");
         }
-
-
         return false;
     }
 }

@@ -1,5 +1,6 @@
 package me.calebtbw.minigamemechanics;
 
+import me.calebtbw.minigamemechanics.kits.KitType;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -50,4 +51,24 @@ public class Manager {
     }
 
     public static boolean isRecruiting(int id) { return getArena(id).getState() == GameState.RECRUITING; }
+
+    public static boolean hasKit(Player player) {
+        if (isPlaying(player)) {
+            if (getArena(player).getKits().containsKey(player.getUniqueId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static KitType getKit(Player player) {
+        if (isPlaying(player)) {
+            if (getArena(player).getKits().containsKey(player.getUniqueId())) {
+                return getArena(player).getKits().get(player.getUniqueId()).getType();
+            }
+        }
+
+        return null;
+    }
 }
