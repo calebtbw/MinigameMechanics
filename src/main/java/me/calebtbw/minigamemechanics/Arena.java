@@ -26,6 +26,8 @@ public class Arena {
     private Countdown countdown;
     private Game game;
 
+    private boolean canJoin;
+
     public Arena(int id) {
         this.id = id;
         players = new ArrayList<>();
@@ -35,6 +37,8 @@ public class Arena {
         state = GameState.RECRUITING;
         countdown = new Countdown(this);
         game = new Game(this);
+
+        canJoin = true;
     }
 
     public void start() {
@@ -53,6 +57,10 @@ public class Arena {
         teams.clear();
         countdown = new Countdown(this);
         game = new Game(this);
+
+        Bukkit.unloadWorld(spawn.getWorld().getName(), false);
+        canJoin = false;
+        spawn = Config.getArenaSpawn(id);
     }
 
     public void sendMessage(String message) {
@@ -102,11 +110,14 @@ public class Arena {
 
     public int getId() { return id; }
     public List<UUID> getPlayers() { return players; }
+    public Location getSpawn() { return spawn; }
     public HashMap<UUID, Kit> getKits() { return kits; }
     public GameState getState() { return state; }
     public Game getGame() { return game; }
+    public boolean canJoin() { return canJoin; }
 
     public void setState(GameState state) { this.state = state; }
+    public void setJoinState(boolean state) { this.canJoin = state; }
     public Team getTeam(Player player) { return teams.get(player.getUniqueId()); }
     public void setTeam(Player player, Team team) {
         removeTeam(player);

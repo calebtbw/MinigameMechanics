@@ -57,9 +57,13 @@ public class ArenaCommand implements CommandExecutor {
 
                     if (id >= 0 && id <= (Config.getArenaAmount() - 1)) {
                         if (Manager.isRecruiting(id)) {
-                            Manager.getArena(id).addPlayer(player);
+                            if (Manager.getArena(id).canJoin()) {
+                                Manager.getArena(id).addPlayer(player);
 
-                            player.sendMessage(ChatColor.GREEN + "You are now playing in Arena" + id + "!");
+                                player.sendMessage(ChatColor.GREEN + "You are now playing in Arena" + id + "!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot join this game right now!");
+                            }
                         } else {
                             player.sendMessage(ChatColor.RED + "You cannot join this game right now!");
                         }
